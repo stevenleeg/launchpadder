@@ -18,6 +18,9 @@ var Button = function(grid, note, y) {
         this.y = y;
     }
 
+    // Setup the event emitter
+    events.EventEmitter.call(this);
+
     this.light = function(color) {
         grid._output.sendMessage([144, this.toNote(), 63]);
     }
@@ -41,6 +44,8 @@ Button.mapToGrid = function (note) {
     var y = Math.floor(note / 8) / 2;
     return [x, y];
 }
+
+util.inherits(Button, events.EventEmitter);
 
 /*
  * Launchpad
@@ -86,10 +91,13 @@ var Launchpad = function(midi_port) {
         var state = (parseInt(msg[2]) == 127) ? true : false;
 
         // Emit an event
-        if(state)
+        if(state) {
             that.emit("press", button);
-        else
+            button.emit("press", button);
+        } else {
             that.emit("release", button);
+            button.emit("release", button);
+        }
     });
 }
 
