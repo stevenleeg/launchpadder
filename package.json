@@ -1,0 +1,21 @@
+{
+    "name": "launchpadder",
+    "version": "v0.0.1",
+    "engines": {
+        "node": ">=0.8.0"
+    },
+    "description": "A library for making the Novation Launchpad incredibly easy to play with.",
+    "author": {
+        "name": "Steve Gattuso",
+        "email": "steve@stevegattuso.me",
+        "url": "http://stevegattuso.me"
+    },
+    "main": "launchpadder.js",
+    "dependencies": {
+        "midi": ">= 0.6.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/stevenleeg/launchpadder.git"
+    }
+}
