@@ -1,11 +1,14 @@
-var launchpad = require("./launchpadder");
+var Launchpadder = require("./launchpadder");
 
-var pad = new launchpad.Launchpad(0);
+// The 0 represents the MIDI port to connect with
+var pad = new Launchpadder.Launchpad(0)
 
 pad.on("press", function(button) {
-    console.log("Button pressed!");
+    button.light();
+    console.log(button + " was pressed");
 });
 
 pad.on("release", function(button) {
-    console.log("Button released!");
+    button.dark();
+    console.log(button + " was released");
 });
