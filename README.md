@@ -5,27 +5,27 @@ A node library for interacting with the [Novation Launchpad](http://global.novat
 You can install Launchpadder via npm:
 
 ```shell
-    $ npm install launchpadder
+$ npm install launchpadder
 ```
 
 ## Usage
 I tried to make usage as straightforward as possible:
 
 ```javascript
-    var Launchpadder = require("launchpadder");
+var Launchpadder = require("launchpadder");
 
-    // The 0 represents the MIDI port to connect with
-    var pad = new Launchpadder.Launchpad(0)
-    
-    pad.on("press", function(button) {
-        button.light();
-        console.log(button + " was pressed");
-    });
-    
-    pad.on("release", function(button) {
-        button.dark();
-        console.log(button + " was released");
-    });
+// The 0 represents the MIDI port to connect with
+var pad = new Launchpadder.Launchpad(0)
+
+pad.on("press", function(button) {
+    button.light();
+    console.log(button + " was pressed");
+});
+
+pad.on("release", function(button) {
+    button.dark();
+    console.log(button + " was released");
+});
 ```
 
 ## Documentation
