@@ -6,7 +6,8 @@ var events = require("events");
  * Button
  * Represents a single button on the Launchpad
  */
-var Button = function(note, y) {
+var Button = function(grid, note, y) {
+    this._grid = grid;
     // Are we being assigned via a note or x, y?
     if(y == undefined) {
         var map = Button.mapToGrid(note);
@@ -18,11 +19,11 @@ var Button = function(note, y) {
     }
 
     this.light = function(color) {
-        output.sendMessage([144, this.toNote(), 63]);
+        grid._output.sendMessage([144, this.toNote(), 63]);
     }
 
     this.dark = function() {
-        output.sendMessage([144, this.toNote(), 12]);
+        grid._output.sendMessage([144, this.toNote(), 12]);
     }
 
     // Converts x,y -> MIDI note
@@ -63,7 +64,7 @@ var Launchpad = function(midi_port) {
     for(var x = 0; x < 8; x++) {
         this._grid.push([]);
         for(var y = 0; y < 8; y++) {
-            this._grid[x][y] = new Button(x, y);
+            this._grid[x][y] = new Button(this, x, y);
         }
     }
 
