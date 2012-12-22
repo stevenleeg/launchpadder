@@ -10,7 +10,7 @@ var Button = function(grid, note, y) {
     this._grid = grid;
     // Are we being assigned via a note or x, y?
     if(y == undefined) {
-        var map = Button.mapToGrid(note);
+        var map = Button.mapToLaunchpad(note);
         this.x = map[0];
         this.y = map[1];
     } else {
@@ -22,11 +22,13 @@ var Button = function(grid, note, y) {
     events.EventEmitter.call(this);
 
     this.light = function(color) {
-        grid._output.sendMessage([144, this.toNote(), 63]);
+        if(color == undefined)
+            color = Launchpad.LED_AMBER;
+        grid._output.sendMessage([144, this.toNote(), color]);
     }
 
     this.dark = function() {
-        grid._output.sendMessage([144, this.toNote(), 12]);
+        grid._output.sendMessage([144, this.toNote(), Launchpad.LED_OFF]);
     }
 
     // Converts x,y -> MIDI note
@@ -39,7 +41,7 @@ var Button = function(grid, note, y) {
     }
 };
 
-Button.mapToGrid = function (note) {
+Button.mapToLaunchpad = function (note) {
     var x = note % 8;
     var y = Math.floor(note / 8) / 2;
     return [x, y];
@@ -77,7 +79,7 @@ var Launchpad = function(midi_port) {
         if(y != undefined)
             return this._grid[x][y];
 
-        var map = Button.mapToGrid(x);
+        var map = Button.mapToLaunchpad(x);
         return this._grid[map[0]][map[1]];
     }
 
@@ -100,6 +102,14 @@ var Launchpad = function(midi_port) {
         }
     });
 }
+// Constants
+Launchpad.LED_OFF = 12;
+Launchpad.LED_LOW_RED = 13;
+Launchpad.LED_LOW_AMBER = 29;
+Launchpad.LED_LOW_GREEN = 28;
+Launchpad.LED_RED = 15;
+Launchpad.LED_AMBER = 63;
+Launchpad.LED_GREEN = 60;
 
 util.inherits(Launchpad, events.EventEmitter);
 
