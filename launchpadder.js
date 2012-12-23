@@ -113,6 +113,20 @@ var Launchpad = function(midi_port) {
     }
 
     /*
+     * Turns all LEDs off
+     */
+    this.allDark = function() {
+        this._output.sendMessage([176, 0, 0]);
+
+        // Reset the state on all buttons
+        for(var x = 0; x < 9; x++) {
+            for(var y = 0; y < 9; y++) {
+                this._grid[x][y]._state = false;
+            }
+        }
+    }
+
+    /*
      * Event handler for button press
      */
     this._input.on("message", function(deltaTime, msg) {
