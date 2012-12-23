@@ -28,14 +28,21 @@ var Button = function(grid, note, y) {
             color = Launchpad.LED_AMBER;
 
         // Send the instruction to the launchpad
-        grid._output.sendMessage([144, this.toNote(), color]);
+        if(this.y == 8)
+            grid._output.sendMessage([176, this.toNote(), color]);
+        else
+            grid._output.sendMessage([144, this.toNote(), color]);
 
         // Save the state
         this._state = color;
     }
 
     this.dark = function() {
-        grid._output.sendMessage([144, this.toNote(), Launchpad.LED_OFF]);
+        if(this.y == 8)
+            grid._output.sendMessage([176, this.toNote(), Launchpad.LED_OFF]);
+        else
+            grid._output.sendMessage([144, this.toNote(), Launchpad.LED_OFF]);
+
         this._state = false;
     }
 
@@ -45,7 +52,10 @@ var Button = function(grid, note, y) {
 
     // Converts x,y -> MIDI note
     this.toNote = function() {
-        return (this.y * 16) + this.x;
+        if(this.y == 8)
+            return 104 + this.x;
+        else
+            return (this.y * 16) + this.x;
     }
 
     this.toString = function() {
@@ -54,10 +64,7 @@ var Button = function(grid, note, y) {
 };
 
 Button.mapToLaunchpad = function (note) {
-    // For the function buttons on the top
-    //if(note >= 104 && note <= 111)
-        //return [note % 8, 8];
-    // And on the right
+    // For right buttons
     if(note % 8 == 0 && ((note / 8) % 2 == 1))
         return [8, Math.floor(note / 8 / 2)];
 
@@ -111,8 +118,12 @@ var Launchpad = function(midi_port) {
     this._input.on("message", function(deltaTime, msg) {
         // Parse the MIDI message
         msg = msg.toString().split(",");
-        // Get the button
-        var button = that.getButton(msg[1]);
+        
+        // We have to do something special for the top buttons
+        if(msg[0] == "176")
+            var button = that.getButton(parseInt(msg[1]) % 8, 8);
+        else
+            var button = that.getButton(msg[1]);
         // On or off?
         var state = (parseInt(msg[2]) == 127) ? true : false;
 
