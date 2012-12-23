@@ -42,6 +42,13 @@ var Button = function(grid, note, y) {
 };
 
 Button.mapToLaunchpad = function (note) {
+    // For the function buttons on the top
+    //if(note >= 104 && note <= 111)
+        //return [note % 8, 8];
+    // And on the right
+    if(note % 8 == 0 && ((note / 8) % 2 == 1))
+        return [8, Math.floor(note / 8 / 2)];
+
     var x = note % 8;
     var y = Math.floor(note / 8) / 2;
     return [x, y];
@@ -68,9 +75,9 @@ var Launchpad = function(midi_port) {
     events.EventEmitter.call(this);
     
     // Initialize all of the buttons
-    for(var x = 0; x < 8; x++) {
+    for(var x = 0; x < 9; x++) {
         this._grid.push([]);
-        for(var y = 0; y < 8; y++) {
+        for(var y = 0; y < 9; y++) {
             this._grid[x][y] = new Button(this, x, y);
         }
     }
