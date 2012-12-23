@@ -75,6 +75,9 @@ var Launchpad = function(midi_port) {
         }
     }
 
+    /*
+     * Gets a button object from this._grid
+     */
     this.getButton = function(x, y) {
         if(y != undefined)
             return this._grid[x][y];
@@ -83,7 +86,9 @@ var Launchpad = function(midi_port) {
         return this._grid[map[0]][map[1]];
     }
 
-    // Setup events
+    /*
+     * Event handler for button press
+     */
     this._input.on("message", function(deltaTime, msg) {
         // Parse the MIDI message
         msg = msg.toString().split(",");
