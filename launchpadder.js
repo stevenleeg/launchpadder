@@ -8,6 +8,8 @@ var events = require("events");
  */
 var Button = function(grid, note, y) {
     this._grid = grid;
+    this._state = false;
+
     // Are we being assigned via a note or x, y?
     if(y == undefined) {
         var map = Button.mapToLaunchpad(note);
@@ -24,11 +26,21 @@ var Button = function(grid, note, y) {
     this.light = function(color) {
         if(color == undefined)
             color = Launchpad.LED_AMBER;
+
+        // Send the instruction to the launchpad
         grid._output.sendMessage([144, this.toNote(), color]);
+
+        // Save the state
+        this._state = color;
     }
 
     this.dark = function() {
         grid._output.sendMessage([144, this.toNote(), Launchpad.LED_OFF]);
+        this._state = false;
+    }
+
+    this.getState = function() {
+        return this._state;
     }
 
     // Converts x,y -> MIDI note
