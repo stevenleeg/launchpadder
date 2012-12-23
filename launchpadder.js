@@ -115,6 +115,7 @@ Launchpad.LED_LOW_GREEN = 28;
 Launchpad.LED_RED = 15;
 Launchpad.LED_AMBER = 63;
 Launchpad.LED_GREEN = 60;
+Launchpad.LED_YELLOW = 62;
 
 util.inherits(Launchpad, events.EventEmitter);
 
