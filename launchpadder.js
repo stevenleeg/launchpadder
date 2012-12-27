@@ -8,7 +8,7 @@ var events = require("events");
  */
 var Button = function(grid, note, y) {
     this._grid = grid;
-    this._state = false;
+    this._state = Launchpad.LED_OFF;
 
     // Are we being assigned via a note or x, y?
     if(y == undefined) {
@@ -43,7 +43,7 @@ var Button = function(grid, note, y) {
         else
             grid._output.sendMessage([144, this.toNote(), Launchpad.LED_OFF]);
 
-        this._state = false;
+        this._state = Launchpad.LED_OFF;
     }
 
     this.getState = function() {
