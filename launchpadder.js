@@ -105,8 +105,12 @@ var Launchpad = function(midi_port) {
      * Gets a button object from this._grid
      */
     this.getButton = function(x, y) {
-        if(y != undefined)
+        if(y != undefined) {
+            // Are they giving a bad value?
+            if(x > 8 || y > 8) 
+                return null;
             return this._grid[x][y];
+        }
 
         var map = Button.mapToLaunchpad(x);
         return this._grid[map[0]][map[1]];
@@ -164,3 +168,4 @@ Launchpad.LED_YELLOW = 62;
 util.inherits(Launchpad, events.EventEmitter);
 
 exports.Launchpad = Launchpad;
+exports.Button = Button;
