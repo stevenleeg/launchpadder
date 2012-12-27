@@ -46,6 +46,24 @@ var Button = function(grid, note, y) {
         this._state = Launchpad.LED_OFF;
     }
 
+    this.startBlink = function(color) {
+        this._blink_color = color;
+        this._grid._blinking.push(this);
+
+        // If we're adding the first blinking LED, start the interval
+        if(this._grid._blinking.length == 1)
+            this._grid._blink_interval = setInterval(this._grid._tick, 500);
+    }
+
+    this.stopBlink = function() {
+        var index = this._grid._blinking.indexOf(this)
+        if(index == -1)
+            return;
+
+        delete this._blink_color;
+        this._grid._blinking.splice(index, 1);
+    }
+
     this.getState = function() {
         return this._state;
     }
@@ -82,6 +100,7 @@ util.inherits(Button, events.EventEmitter);
 var Launchpad = function(midi_port) {
     // Some variables
     this._grid = [];
+    this._blinking = [];
     var that = this;
 
     // Connect to the MIDI port
@@ -127,6 +146,18 @@ var Launchpad = function(midi_port) {
             for(var y = 0; y < 9; y++) {
                 this._grid[x][y]._state = false;
             }
+        }
+    }
+
+    this._tick = function() {
+        if(that._blinking.length == 0)
+            clearInterval(that._blink_interval);
+
+        for(var i in that._blinking) {
+            if(that._blinking[i].getState() == Launchpad.LED_OFF)
+                that._blinking[i].light(that._blinking[i]._blink_color);
+            else
+                that._blinking[i].dark();
         }
     }
 
