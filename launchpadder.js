@@ -66,6 +66,7 @@ var Button = function(grid, note, y) {
     }
     delete this._blink_color;
     this._grid._blinking.splice(index, 1);
+    this.dark();
   };
   
   // MOD start
