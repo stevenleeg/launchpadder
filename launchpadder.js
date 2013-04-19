@@ -115,7 +115,9 @@ util.inherits(Button, events.EventEmitter);
  * Launchpad
  * Represents the launchpad as a whole
  */
-var Launchpad = function(midi_port) {
+var Launchpad = function(midi_input, midi_output) {
+  midi_input = midi_input || 0;
+  midi_output = midi_output || midi_input;
   var that = this;
   this._grid = [];
   this._blinking = [];
@@ -123,8 +125,8 @@ var Launchpad = function(midi_port) {
   // Connect to the MIDI port
   this._input = new Midi.input();
   this._output = new Midi.output();
-  this._input.openPort(midi_port);
-  this._output.openPort(midi_port);
+  this._input.openPort(midi_input);
+  this._output.openPort(midi_output);
 
   // Setup the event emitter
   events.EventEmitter.call(this);
