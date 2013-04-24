@@ -88,7 +88,7 @@ Returns true when the Button is lit up. Optionally: specify "color" to validate 
 Gets the button's current state, returns a MIDI representation of the color. See `Color` class below.
 
 ### `toggle([int color], [int color])`
-Toggles the button's state between two colors. The first color defaults to amber if unspecified, the second to off. If the current color is neither of the two values, the button turns off.
+Toggles the button's state between two colors. The first color defaults to amber if unspecified, the second to off. If the current color is neither of the two values, the second value is used.
 
 ### `startBlinking([int color])`
 Starts blinking the button in the specified color (defaults to amber). The timeout is set at 500ms.
