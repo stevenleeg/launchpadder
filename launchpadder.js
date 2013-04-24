@@ -6,9 +6,9 @@ var events = require("events");
  * Button
  * Represents a single button on the Launchpad
  */
-var Button = function(grid, note, y) {
+var Button = function (grid, note, y) {
   this._grid = grid;
-  this._state = Launchpad.LED_OFF;
+  this._state = Color.OFF;
 
   // Are we being assigned via a note or x, y?
   if (!y) {
@@ -23,8 +23,8 @@ var Button = function(grid, note, y) {
   // Setup the event emitter
   events.EventEmitter.call(this);
 
-  this.light = function(color) {
-    color = color || Launchpad.LED_AMBER;
+  this.light = function (color) {
+    color = color || Color.AMBER;
 
     // Send the instruction to the launchpad
     if (this.y == 8) {
@@ -36,21 +36,43 @@ var Button = function(grid, note, y) {
     this._state = color;
   };
 
-  this.dark = function() {
+  this.dark = function () {
     if (this.y == 8) {
-      grid._output.sendMessage([176, this.toNote(), Launchpad.LED_OFF]);
+      grid._output.sendMessage([176, this.toNote(), Color.OFF]);
     } else {
-      grid._output.sendMessage([144, this.toNote(), Launchpad.LED_OFF]);
+      grid._output.sendMessage([144, this.toNote(), Color.OFF]);
     }
-    this._state = Launchpad.LED_OFF;
+    this._state = Color.OFF;
   };
 
-  this.getState = function() {
+  this.getState = function () {
     return this._state;
   };
   
-  this.startBlinking = function(color) {
-    this._blink_color = color || Launchpad.LED_AMBER; // MOD
+  this.getX = function() { return this.x; }
+  this.getY = function() { return this.y; }
+  
+  this.toggle = function(color, color2) {
+    color = color || Color.AMBER;
+    color2 = color2 || Color.OFF;
+    
+    if (this._state == color2) {
+      var sColor = color;
+    } else {
+      var sColor = color2;
+    }
+    this._state = sColor;
+    
+    if (this.y == 8) {
+      grid._output.sendMessage([176, this.toNote(), sColor]);
+    } else {
+      grid._output.sendMessage([144, this.toNote(), sColor]);
+    }
+    
+  };
+  
+  this.startBlinking = function (color) {
+    this._blink_color = color || Color.AMBER;
     this._grid._blinking.push(this);
 
     // If we're adding the first blinking LED, start the interval
@@ -59,7 +81,7 @@ var Button = function(grid, note, y) {
     }
   };
 
-  this.stopBlinking = function() {
+  this.stopBlinking = function () {
     var index = this._grid._blinking.indexOf(this)
     if (index == -1) {
       return;
@@ -69,8 +91,7 @@ var Button = function(grid, note, y) {
     this.dark();
   };
   
-  // MOD start
-  this.isBlinking = function() {
+  this.isBlinking = function () {
     if (this._grid._blinking.indexOf(this) == -1) {
       return false;
     } else {
@@ -79,12 +100,11 @@ var Button = function(grid, note, y) {
   };
   
   this.isLit = function()  {
-    if (_state == Launchpad.LED_OFF) {
+    if (this._state == Color.OFF) {
       return false;
     }
     return true;
   };
-  // MOD end
 
   // Converts x,y -> MIDI note
   this.toNote = function() {
@@ -176,7 +196,7 @@ var Launchpad = function(midi_input, midi_output) {
         // MOD end
     }
     for(var i in that._blinking) {
-      if(that._blinking[i].getState() == Launchpad.LED_OFF) {
+      if(that._blinking[i].getState() == Color.OFF) {
         that._blinking[i].light(that._blinking[i]._blink_color);
       } else {
         that._blinking[i].dark();
@@ -210,24 +230,10 @@ var Launchpad = function(midi_input, midi_output) {
       button.emit("release", button);
     }
   });
-}
-
-// Constants
-Launchpad.LED_OFF = 12;
-Launchpad.LED_LOW_RED = 13;
-Launchpad.LED_LOW_AMBER = 29;
-Launchpad.LED_LOW_GREEN = 28;
-Launchpad.LED_RED = 15;
-Launchpad.LED_AMBER = 63;
-Launchpad.LED_GREEN = 60;
-Launchpad.LED_YELLOW = 62;
-
+};
 util.inherits(Launchpad, events.EventEmitter);
 
-exports.Launchpad = Launchpad;
-
-// MOD start
-exports.colors = {
+var Color = {
   OFF: 12,
   LOW_RED: 13,
   RED: 15,
@@ -235,7 +241,25 @@ exports.colors = {
   AMBER: 63,
   LOW_GREEN: 28,
   GREEN: 60,
-  YELLOW: 62
+  YELLOW: 62,
+  getColor: function (green, red) {
+    green = green || 0;
+    red = red || 0;
+    return 16 * green + red + 12;
+  },
+  getGreen: function (color) {
+    if (!color) {
+      return false;
+    }
+    return Math.floor(color / 16);
+  },
+  getRed: function (color) {
+    if (!color) {
+      return false;
+    }
+    return (color - 12) % 16;
+  }
 };
-// MOD end
 
+exports.Launchpad = Launchpad;
+exports.Color = Color;
