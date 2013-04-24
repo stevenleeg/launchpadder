@@ -98,8 +98,9 @@ var Button = function (grid, note, y) {
     }
   };
   
-  this.isLit = function ()  {
-    if (this._state == Color.OFF) {
+  this.isLit = function (color)  {
+    color = color || Color.OFF;
+    if (this._state == color) {
       return false;
     }
     return true;

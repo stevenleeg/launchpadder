@@ -14,5 +14,3 @@ pad.on("release", function(button) {
   button.dark();
   console.log(button + " was released");
 });
-
-
