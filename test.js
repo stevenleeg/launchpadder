@@ -3,7 +3,7 @@ var color = require("./launchpadder").Color;
 
 // The 0 represents the MIDI port to connect with
 // The 1 represents the MIDI output-port to connect with
-var pad = new launchpadder(0);
+var pad = new launchpadder(0, 1);
 
 pad.on("press", function(button) {
   button.light();

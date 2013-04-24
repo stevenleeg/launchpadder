@@ -12,9 +12,8 @@ var Button = function (grid, note, y) {
 
   // Are we being assigned via a note or x, y?
   if (!y) {
-    var map = Button.mapToLaunchpad(note);
-    this.x = map[0];
-    this.y = map[1];
+    this.x = this._grid.getX(note);
+    this.y = this._grid.getY(note);
   } else {
     this.x = note;
     this.y = y;
@@ -49,10 +48,10 @@ var Button = function (grid, note, y) {
     return this._state;
   };
   
-  this.getX = function() { return this.x; }
-  this.getY = function() { return this.y; }
+  this.getX = function () { return this.x; }
+  this.getY = function () { return this.y; }
   
-  this.toggle = function(color, color2) {
+  this.toggle = function (color, color2) {
     color = color || Color.AMBER;
     color2 = color2 || Color.OFF;
     
@@ -99,7 +98,7 @@ var Button = function (grid, note, y) {
     }
   };
   
-  this.isLit = function()  {
+  this.isLit = function ()  {
     if (this._state == Color.OFF) {
       return false;
     }
@@ -107,7 +106,7 @@ var Button = function (grid, note, y) {
   };
 
   // Converts x,y -> MIDI note
-  this.toNote = function() {
+  this.toNote = function () {
     if (this.y == 8) {
       return 104 + this.x;
     } else {
@@ -115,19 +114,9 @@ var Button = function (grid, note, y) {
     }
   };
 
-  this.toString = function() {
+  this.toString = function () {
     return "(" + this.x + ", " + this.y + ")";
   };
-};
-
-Button.mapToLaunchpad = function (note) {
-  // For right buttons
-  if (note % 8 == 0 && ((note / 8) % 2 == 1)) {
-    return [8, Math.floor(note / 8 / 2)];
-  }
-  var x = note % 8;
-  var y = Math.floor(note / 8) / 2;
-  return [x, y];
 };
 
 util.inherits(Button, events.EventEmitter);
@@ -136,7 +125,7 @@ util.inherits(Button, events.EventEmitter);
  * Launchpad
  * Represents the launchpad as a whole
  */
-var Launchpad = function(midi_input, midi_output) {
+var Launchpad = function (midi_input, midi_output) {
   midi_input = midi_input || 0;
   midi_output = midi_output || midi_input;
   var that = this;
@@ -152,6 +141,22 @@ var Launchpad = function(midi_input, midi_output) {
   // Setup the event emitter
   events.EventEmitter.call(this);
   
+  // Some functions to resolve X and Y from a note
+  this.getX = function (note) {
+    // For right buttons
+    if (note % 8 == 0 && ((note / 8) % 2 == 1)) {
+      return 8;
+    }
+    return note % 8;
+  };
+  this.getY = function (note) {
+    // For right buttons
+    if (note % 8 == 0 && ((note / 8) % 2 == 1)) {
+      return Math.floor(note / 8 / 2);
+    }
+    return Math.floor(note / 8) / 2;
+  };
+  
   // Initialize all of the buttons
   for (var x = 0; x < 9; x++) {
     this._grid.push([]);
@@ -160,24 +165,20 @@ var Launchpad = function(midi_input, midi_output) {
     }
   }
 
-  /*
-   * Gets a button object from this._grid
-   */
-  this.getButton = function(x, y) {
+  // Gets a button object from this._grid
+  this.getButton = function (x, y) {
     if (y) {
       if (x > 8 || y > 8) {
         return null;
       }
       return this._grid[x][y];
     }
-    var map = Button.mapToLaunchpad(x);
-    return this._grid[map[0]][map[1]];
+    // Hax 8D
+    return this._grid[that.getX(x)][that.getY(x)];
   };
 
-  /*
-   * Turns all LEDs off
-   */
-  this.allDark = function() {
+  // Turns all LEDs off
+  this.allDark = function () {
     this._output.sendMessage([176, 0, 0]);
 
     // Reset the state on all buttons
@@ -188,14 +189,14 @@ var Launchpad = function(midi_input, midi_output) {
     }
   };
   
-  this._tick = function() {
+  this._tick = function () {
     if(that._blinking.length == 0) {
         clearInterval(that._blink_interval);
         // MOD start
         return;
         // MOD end
     }
-    for(var i in that._blinking) {
+    for (var i in that._blinking) {
       if(that._blinking[i].getState() == Color.OFF) {
         that._blinking[i].light(that._blinking[i]._blink_color);
       } else {
@@ -203,11 +204,9 @@ var Launchpad = function(midi_input, midi_output) {
       }
     }
   };
-
-  /*
-   * Event handler for button press
-   */
-  this._input.on("message", function(deltaTime, msg) {
+  
+  // Event handler for Button press
+  this._input.on("message", function (deltaTime, msg) {
     // Parse the MIDI message
     msg = msg.toString().split(",");
     
