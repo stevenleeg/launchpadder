@@ -99,9 +99,14 @@ var Button = function (grid, note, y) {
   };
   
   this.isLit = function (color)  {
-    color = color || Color.OFF;
-    if (this._state == color) {
-      return false;
+    if (!color) {
+      if (this._state == Color.OFF) {
+        return false;
+      }
+    } else {
+      if (!this._state == color) {
+        return false
+      }
     }
     return true;
   };
