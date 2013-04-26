@@ -104,7 +104,7 @@ var Button = function (grid, note, y) {
         return false;
       }
     } else {
-      if (!this._state == color) {
+      if (this._state != color) {
         return false
       }
     }
