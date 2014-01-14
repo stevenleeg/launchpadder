@@ -12,7 +12,7 @@
     },
     "main": "launchpadder.js",
     "dependencies": {
-        "midi": ">= 0.6.0"
+        "midi": "git://github.com/drewish/node-midi.git#master"
     },
     "repository": {
         "type": "git",
