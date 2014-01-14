@@ -138,13 +138,9 @@ var Launchpad = function(midi_input, midi_output) {
     this._grid = [];
     this._blinking = [];
 
-    console.log("wat");
     // Connect to the MIDI port
     this._input = new Midi.input();
     this._output = new Midi.output();
-
-    console.log("# inputs:  "+ this._input.getPortCount());
-    console.log("# outputs: "+ this._output.getPortCount());
 
     this._input.openPort(midi_input);
     this._output.openPort(midi_output);
